@@ -28,6 +28,47 @@ class Generator
         }
 
         System.out.println(values);
+
+        double numRows = findNumRows(values.size()-1, 0) + 1;
+
+        System.out.println(numRows);
+
+        String[][] table = new String[values.size()+1][(int)Math.round(numRows+1)]; // Add 1 to rows to allow for headers
+
+        addHeaders(table,values);
+
+        printTable(table, values.size()+1);
+    }
+
+    public static void printTable(String[][] table, int numCols)
+    {
+        for (int r = 0; r < table[0].length; r++)
+        {
+            String row = "| ";
+
+            for (int i = 0; i < numCols; i++)
+            {
+                row += table[i][r] + " | ";
+            }
+
+            System.out.println(row);
+        }
+    }
+
+    public static void addHeaders(String[][] table, ArrayList<String> values)
+    {
+        for (int i = 0; i < values.size(); i++)
+        {
+            table[i][0] = values.get(i);
+        }
+
+        table[values.size()][0] = "Result";
+    }
+
+    public static double findNumRows(int size, double total) // Finds the number of columns required for the logic table. Will calculate by finding max binary number possible with binary number length "size" + 1 (+1 is done outside of function)
+    {
+        if (size != 0) return findNumRows(size-1, total + Math.pow(2,size));
+        else return total + 1;
     }
 
     public static ArrayList<String> findValues(String exp, String[] accepted)

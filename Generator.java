@@ -4,8 +4,8 @@ class Generator
 {
     public static void main(String[] args)
     {
-        String[] accepted = new String[]{"¬","v","^","->","(",")"}; // All the accepted values (apart from letters)
-        String[] banned = new String[]{"v"}; // Letters that are banned (e.g. they are used as expressions). Not used yet
+        String[] accepted = new String[]{"¬","v","^","->","(",")"}; // All the accepted operators and brackets
+        String[] banned = new String[]{"v"}; // Values that are banned (e.g. they are used as expressions). Not used yet
 
         String expression = getString("Please enter the expression"); // Get the expression from the user
 
@@ -19,12 +19,35 @@ class Generator
             System.out.println("Expression valid");
         }
 
-        // int numValues = findValues(expression); // Find how many different values there are in the expression (e.g. A v B returns 2)
+        ArrayList<String> values = findValues(expression, accepted); // Fill arraylist with all values in expression
+
+        if (values.size() == 0)
+        {
+            System.out.println("No values in expression");
+            return;
+        }
+
+        System.out.println(values);
     }
 
-    public static int findValues(int exp)
+    public static ArrayList<String> findValues(String exp, String[] accepted)
     {
-        for
+        ArrayList<String> values = new ArrayList<String>();
+
+        for (int i = 0; i < exp.length(); i++)
+        {
+            String current = String.valueOf(exp.charAt(i));
+
+            if (!arrayContains(current, accepted)) // Check that current is not an operator
+            {
+                if (!values.contains(current))
+                {
+                    values.add(current);
+                }
+            }
+        }
+
+        return values;
     }
 
     public static String getString(String msg)

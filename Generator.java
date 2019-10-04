@@ -38,6 +38,13 @@ class Generator
         addHeaders(table,values);
 
         printTable(table, values.size()+1);
+
+        addInitial(table);
+    }
+
+    public static void addInitial(String[][] table) // Add the 0's and 1's to the table before any cals can be done
+    {
+        
     }
 
     public static void printTable(String[][] table, int numCols)

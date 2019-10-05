@@ -27,35 +27,80 @@ class Generator
             return;
         }
 
-        System.out.println(values);
+        int numRows = (int)Math.round(findNumRows(values.size()-1, 0) + 2);
+        int numCols = values.size()+1;
 
-        double numRows = findNumRows(values.size()-1, 0) + 1;
-
-        System.out.println(numRows);
-
-        String[][] table = new String[values.size()+1][(int)Math.round(numRows+1)]; // Add 1 to rows to allow for headers
+        String[][] table = new String[numRows][numCols];
 
         addHeaders(table,values);
 
-        printTable(table, values.size()+1);
+        fillTable(table, numCols-1);
 
-        addInitial(table);
+        printTable(table, numRows);
     }
 
-    public static void addInitial(String[][] table) // Add the 0's and 1's to the table before any cals can be done
+    public static void fillTable(String[][] table, int numCols) // Calculate the expression and fill the table array
     {
-        
+        String[] binary = new String[numCols];
+
+        Arrays.fill(binary, "0");
+
+        for (int r = 1; r < table.length; r++)
+        {
+            addToRow(table,r,binary);
+
+            incBinary(binary);
+        }
     }
 
-    public static void printTable(String[][] table, int numCols)
+    public static void addToRow(String[][] table, int r, String[] binary)
     {
-        for (int r = 0; r < table[0].length; r++)
+        for (int c = 0; c < binary.length; c++)
+        {
+            table[r][c] = binary[c];
+        }
+    }
+
+
+    public static void incBinary(String[] binary) // Increment a binary number by 1
+    {
+        int len = binary.length;
+
+        if (binary[len-1] == "0")
+        {
+            binary[len-1] = "1";
+
+            return;
+        }
+
+        binary[len-1] = "0";
+
+        for (int i = len-2; i >= 0; i--)
+        {
+            if (binary[i] == "0")
+            {
+                binary[i] = "1";
+
+                return;
+            }
+            else
+            {
+                binary[i] = "0";
+            }
+        }
+
+        return;
+    }
+
+    public static void printTable(String[][] table, int numRows)
+    {
+        for (int r = 0; r < numRows; r++)
         {
             String row = "| ";
 
-            for (int i = 0; i < numCols; i++)
+            for (int c = 0; c < table[1].length; c++)
             {
-                row += table[i][r] + " | ";
+                row += table[r][c] + " | ";
             }
 
             System.out.println(row);
@@ -66,16 +111,28 @@ class Generator
     {
         for (int i = 0; i < values.size(); i++)
         {
-            table[i][0] = values.get(i);
+            table[0][i] = values.get(i);
         }
 
-        table[values.size()][0] = "Result";
+        table[0][values.size()] = "Result";
     }
 
     public static double findNumRows(int size, double total) // Finds the number of columns required for the logic table. Will calculate by finding max binary number possible with binary number length "size" + 1 (+1 is done outside of function)
     {
         if (size != 0) return findNumRows(size-1, total + Math.pow(2,size));
         else return total + 1;
+    }
+
+    public static boolean stringToBool(String s) // Converts string to boolean
+    {
+        if (s.equals("1")) return true;
+        else return false;
+    }
+
+    public static String boolToString(boolean b) // Converts boolean to string
+    {
+        if (b) return "1";
+        else return "0";
     }
 
     public static ArrayList<String> findValues(String exp, String[] accepted)

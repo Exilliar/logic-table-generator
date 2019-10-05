@@ -59,26 +59,46 @@ class Generator
         }
         else
         {
-            int numImplies = expression.length() - expression.replace("->", "").length(); // Find the number of implies in the expression
+            int numImplies = findNumImplies(expression); // Need to find the number of implies statements as it takes 2 chars rather than the usual 1
+            System.out.println(numImplies);
 
-            String[] expArr = new String[expression.length()+numImplies];
+            String[] expArr = new String[expression.length()-numImplies];
+
+            int arrI = 0;
 
             for (int i = 0; i < expression.length(); i++)
             {
-                if (expression.charAt(i) == "-".charAt(0))
+                if (expression.charAt(i) != ">".charAt(0)) // If current value is not the second half of an implies
                 {
-                    expArr[i] = Character.toString(expression.charAt(i)) + Character.toString(expression.charAt(i+1));
+                    if (expression.charAt(i) == "-".charAt(0))
+                    {
+                        expArr[arrI] = Character.toString(expression.charAt(i)) + Character.toString(expression.charAt(i+1));
+                    }
+                    else
+                    {
+                        expArr[arrI] = Character.toString(expression.charAt(i));
+                    }
 
-                    i++;
-                }
-                else
-                {
-                    expArr[i] = Character.toString(expression.charAt(i));
+                    arrI++;
                 }
             }
 
             return expArr;
         }
+    }
+
+    public static int findNumImplies(String exp)
+    {
+        int num = 0;
+
+        for (int i = 0; i < exp.length(); i++)
+        {
+            Character current = exp.charAt(i);
+
+            if (current == "-".charAt(0)) num++;
+        }
+
+        return num;
     }
 
     public static void fillTable(String[][] table, int numCols, String[] expressionArr, ArrayList<String> values) // Calculate the expression and fill the table array
@@ -211,11 +231,14 @@ class Generator
         {
             String current = String.valueOf(exp.charAt(i));
 
-            if (!arrayContains(current, accepted)) // Check that current is not an operator
+            if (!current.equals("-") && !current.equals(">")) // Check if the value is an implies
             {
-                if (!values.contains(current))
+                if (!arrayContains(current, accepted)) // Check that current is not an operator
                 {
-                    values.add(current);
+                    if (!values.contains(current))
+                    {
+                        values.add(current);
+                    }
                 }
             }
         }

@@ -8,6 +8,7 @@ class Generator
         String[] banned = new String[]{"v"}; // Values that are banned (e.g. they are used as expressions). Not used yet
 
         String expression = getString("Please enter the expression"); // Get the expression from the user
+        expression.replaceAll("\\s+",""); // Remove all spaces, makes calculating the expression easier later
 
         if (!validExpression(expression, accepted))
         {
@@ -18,6 +19,10 @@ class Generator
         {
             System.out.println("Expression valid");
         }
+
+        String[] expressionArr = splitExpression(expression);
+
+        System.out.println(Arrays.toString(expressionArr));
 
         ArrayList<String> values = findValues(expression, accepted); // Fill arraylist with all values in expression
 
@@ -34,12 +39,49 @@ class Generator
 
         addHeaders(table,values);
 
-        fillTable(table, numCols-1);
+        fillTable(table, numCols-1, expressionArr, values);
 
         printTable(table, numRows);
     }
 
-    public static void fillTable(String[][] table, int numCols) // Calculate the expression and fill the table array
+    public static String[] splitExpression(String expression)
+    {
+        if (!expression.contains("->"))
+        {
+            String[] expArr = new String[expression.length()];
+
+            for (int i = 0; i < expression.length(); i++)
+            {
+                expArr[i] = Character.toString(expression.charAt(i));
+            }
+
+            return expArr;
+        }
+        else
+        {
+            int numImplies = expression.length() - expression.replace("->", "").length(); // Find the number of implies in the expression
+
+            String[] expArr = new String[expression.length()+numImplies];
+
+            for (int i = 0; i < expression.length(); i++)
+            {
+                if (expression.charAt(i) == "-".charAt(0))
+                {
+                    expArr[i] = Character.toString(expression.charAt(i)) + Character.toString(expression.charAt(i+1));
+
+                    i++;
+                }
+                else
+                {
+                    expArr[i] = Character.toString(expression.charAt(i));
+                }
+            }
+
+            return expArr;
+        }
+    }
+
+    public static void fillTable(String[][] table, int numCols, String[] expressionArr, ArrayList<String> values) // Calculate the expression and fill the table array
     {
         String[] binary = new String[numCols];
 
@@ -49,7 +91,33 @@ class Generator
         {
             addToRow(table,r,binary);
 
+            String result = calcResult(table[r], expressionArr, values);
+
+            table[r][numCols] = result;
+
             incBinary(binary);
+        }
+    }
+
+    public static String calcResult(String[] row, String[] expressionArr, ArrayList<String> values)
+    {
+        String result = "";
+
+        String[][] valuesData = new String[values.size()][2];
+
+        fillValuesData(valuesData, row, values);
+
+        System.out.println(Arrays.deepToString(valuesData));
+
+        return result;
+    }
+
+    public static void fillValuesData(String[][] valuesData, String[] row, ArrayList<String> values)
+    {
+        for (int v = 0; v < values.size(); v++)
+        {
+            valuesData[v][0] = values.get(v);
+            valuesData[v][1] = row[v];
         }
     }
 
@@ -173,22 +241,27 @@ class Generator
         {
             String current = String.valueOf(exp.charAt(i));
 
-            if (!arrayContains(current, accepted))
+            if (current.equals("-")) current += ">"; // Handle implies (implies takes 2 characters)
+
+            if (!current.equals(">"))
             {
-                if (wasLetter) return false;
-
-                wasLetter = true;
-
-                if (!Character.isLetter(current.charAt(0)))
+                if (!arrayContains(current, accepted))
                 {
-                    return false;
-                }
-            }
-            else
-            {
-                wasLetter = false;
+                    if (wasLetter) return false;
 
-                openBracket += checkBrackets(current);
+                    wasLetter = true;
+
+                    if (!Character.isLetter(current.charAt(0)))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    wasLetter = false;
+
+                    openBracket += checkBrackets(current);
+                }
             }
         }
 

@@ -60,7 +60,6 @@ class Generator
         else
         {
             int numImplies = findNumImplies(expression); // Need to find the number of implies statements as it takes 2 chars rather than the usual 1
-            System.out.println(numImplies);
 
             String[] expArr = new String[expression.length()-numImplies];
 

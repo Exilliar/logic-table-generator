@@ -124,11 +124,60 @@ class Generator
 
         String[][] valuesData = new String[values.size()][2];
 
+        String[] exp = copyStringArr(expressionArr); // Copying the expression as changing the values in expressionArr here will change it everywhere (yey stack and heap)
+
         fillValuesData(valuesData, row, values);
 
-        System.out.println(Arrays.deepToString(valuesData));
+        // System.out.println(Arrays.deepToString(valuesData));
+
+        placeValues(exp, valuesData); // Replace the letter values with the real values in this row
+
+        System.out.println(Arrays.toString(exp));
+
+        calcExp(exp);
 
         return result;
+    }
+
+    public static void calcExp(String[] exp) // Actually run the calculation, needs to be a separate function as it may be recursive (due to brackets)
+    {
+
+    }
+
+    public static void placeValues(String[] exp, String[][] valuesData)
+    {
+        for (int i = 0; i < exp.length; i++)
+        {
+            if (Character.isLetter(exp[i].charAt(0)) && !exp[i].equals("v")) // Check that the value is a letter and is not 'v'(or symbol)
+            {
+                exp[i] = getRealValue(valuesData,exp[i]);
+            }
+        }
+    }
+
+    public static String getRealValue(String[][] valuesData, String value)
+    {
+        for (int i = 0; i < valuesData.length; i++)
+        {
+            if (valuesData[i][0].equals(value))
+            {
+                return valuesData[i][1];
+            }
+        }
+
+        return "null";
+    }
+
+    public static String[] copyStringArr(String[] arr)
+    {
+        String[] newArr = new String[arr.length];
+
+        for (int i = 0; i < arr.length; i++)
+        {
+            newArr[i] = arr[i];
+        }
+
+        return newArr;
     }
 
     public static void fillValuesData(String[][] valuesData, String[] row, ArrayList<String> values)

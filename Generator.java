@@ -130,7 +130,7 @@ class Generator
 
         // System.out.println(Arrays.deepToString(valuesData));
 
-        placeValues(exp, valuesData); // Replace the letter values with the real values in this row
+        placeValues(exp, valuesData); // Replace the letter values with the check values in this row
 
         System.out.println(Arrays.toString(exp));
 
@@ -150,12 +150,12 @@ class Generator
         {
             if (Character.isLetter(exp[i].charAt(0)) && !exp[i].equals("v")) // Check that the value is a letter and is not 'v'(or symbol)
             {
-                exp[i] = getRealValue(valuesData,exp[i]);
+                exp[i] = getCheckValue(valuesData,exp[i]);
             }
         }
     }
 
-    public static String getRealValue(String[][] valuesData, String value)
+    public static String getCheckValue(String[][] valuesData, String value)
     {
         for (int i = 0; i < valuesData.length; i++)
         {

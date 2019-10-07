@@ -134,14 +134,107 @@ class Generator
 
         System.out.println(Arrays.toString(exp));
 
-        calcExp(exp);
+        calcExp(exp, 0, exp.length-1);
+
+        System.out.println("Finished exp: " + Arrays.toString(exp));
+
+        result = findResult(exp);
 
         return result;
     }
 
-    public static void calcExp(String[] exp) // Actually run the calculation, needs to be a separate function as it may be recursive (due to brackets)
+    public static String findResult(String[] exp)
     {
+        for (int i = 0; i < exp.length; i++)
+        {
+            if (exp[i].equals("1") || exp[i].equals("0")) return exp[i];
+        }
 
+        return "Error";
+    }
+
+    public static void calcExp(String[] exp, int start, int end) // Actually run the calculation, needs to be a separate function as it may be recursive (due to brackets)
+    {
+        for (int i = start; i < end; i++)
+        {
+            if (!exp[i].equals(""))
+            {
+                if (!exp[i].equals("1") && !exp[i].equals("0"))
+                {
+                    if (exp[i+1].equals("("))
+                    {
+                        exp[i+1] = "";
+                        calcExp(exp, i+1, findCloseBrackets(exp, i+1));
+                    }
+
+                    boolean prevVal = findPrevVal(exp, i);
+                    boolean nextVal = findNextVal(exp, i);
+
+                    System.out.println("preVal: " + prevVal + " nextVal: " + nextVal);
+
+                    switch(exp[i])
+                    {
+                        case "v": exp[i] = boolToString(prevVal || nextVal); System.out.println("or"); break;
+                        case "^": exp[i] = boolToString(prevVal && nextVal); System.out.println("and"); break;
+                        case "¬": exp[i+1] = boolToString(!nextVal); System.out.println("not"); break;
+                        case "->": exp[i] = boolToString(!prevVal || nextVal); System.out.println("implies"); break;
+                        default: System.out.println("unrecognised symbol"); break;
+                    }
+                }
+            }
+        }
+    }
+
+    public static boolean findPrevVal(String[] exp, int start)
+    {
+        for (int i = start; i >= 0; i--)
+        {
+            if (exp[i].equals("1") || exp[i].equals("0"))
+            {
+                boolean value = stringToBool(exp[i]);
+
+                exp[i] = "";
+
+                return value;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean findNextVal(String[] exp, int start)
+    {
+        for (int i = start; i < exp.length; i++)
+        {
+            if (exp[i].equals("1") || exp[i].equals("0"))
+            {
+                boolean value = stringToBool(exp[i]);
+
+                exp[i] = "";
+
+                return value;
+            }
+        }
+
+        return false;
+    }
+
+    public static int findCloseBrackets(String[] exp, int start)
+    {
+        int open = 0; // increments if another open brackets is found (will change which close brackets needs to be found)
+
+        for (int i = start; i < exp.length; i++)
+        {
+            if (exp[i].equals(")") && open == 0)
+            {
+                exp[i] = "";
+                return i;
+            }
+            else if (exp[i].equals(")")) open--;
+            else if (exp[i].equals("(")) open++;
+        }
+
+        return -1;
     }
 
     public static void placeValues(String[] exp, String[][] valuesData)

@@ -15,14 +15,8 @@ class Generator
             System.out.println("Invalid expression");
             return; // Will end the program if the expression is invalid
         }
-        else
-        {
-            System.out.println("Expression valid");
-        }
 
         String[] expressionArr = splitExpression(expression);
-
-        System.out.println(Arrays.toString(expressionArr));
 
         ArrayList<String> values = findValues(expression, accepted); // Fill arraylist with all values in expression
 
@@ -128,15 +122,9 @@ class Generator
 
         fillValuesData(valuesData, row, values);
 
-        // System.out.println(Arrays.deepToString(valuesData));
-
         placeValues(exp, valuesData); // Replace the letter values with the check values in this row
 
-        System.out.println(Arrays.toString(exp));
-
         calcExp(exp, 0, exp.length-1);
-
-        System.out.println("Finished exp: " + Arrays.toString(exp));
 
         result = findResult(exp);
 
@@ -169,8 +157,6 @@ class Generator
 
                     boolean prevVal = findPrevVal(exp, i);
                     boolean nextVal = findNextVal(exp, i);
-
-                    System.out.println("preVal: " + prevVal + " nextVal: " + nextVal);
 
                     switch(exp[i])
                     {

@@ -11,12 +11,9 @@ expression = The logical expression that the user enters at the start of the pro
 check values = The values on the left hand side of the table, the actual value of the values that will be put into the expression
 
 # Operators
-v = or
-
-^ = and
-
-¬ = not
-
+v = or  
+^ = and  
+¬ = not  
 -> = ¬A v B = implies
 
 # Example Expressions

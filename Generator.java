@@ -174,10 +174,10 @@ class Generator
 
                     switch(exp[i])
                     {
-                        case "v": exp[i] = boolToString(prevVal || nextVal); System.out.println("or"); break;
-                        case "^": exp[i] = boolToString(prevVal && nextVal); System.out.println("and"); break;
-                        case "¬": exp[i+1] = boolToString(!nextVal); System.out.println("not"); break;
-                        case "->": exp[i] = boolToString(!prevVal || nextVal); System.out.println("implies"); break;
+                        case "v": exp[i] = boolToString(prevVal || nextVal); break;
+                        case "^": exp[i] = boolToString(prevVal && nextVal); break;
+                        case "¬": exp[i+1] = boolToString(!nextVal); break;
+                        case "->": exp[i] = boolToString(!prevVal || nextVal); break;
                         default: System.out.println("unrecognised symbol"); break;
                     }
                 }

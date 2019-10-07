@@ -10,7 +10,7 @@ check values = The values on the left hand side of the table, the actual value o
 # Operators
 v = or  
 ^ = and  
-¬ = not  
+~ = not  
 -> = ¬A v B = implies
 
 # Example Expressions

@@ -4,7 +4,7 @@ class Generator
 {
     public static void main(String[] args)
     {
-        String[] accepted = new String[]{"¬","v","^","->","(",")"}; // All the accepted operators and brackets
+        String[] accepted = new String[]{"~","v","^","->","(",")"}; // All the accepted operators and brackets
         String[] banned = new String[]{"v"}; // Values that are banned (e.g. they are used as expressions). Not used yet
 
         String expression = getString("Please enter the expression"); // Get the expression from the user
@@ -176,7 +176,7 @@ class Generator
                     {
                         case "v": exp[i] = boolToString(prevVal || nextVal); break;
                         case "^": exp[i] = boolToString(prevVal && nextVal); break;
-                        case "¬": exp[i+1] = boolToString(!nextVal); break; // Not currently working (logs "expression invalid")
+                        case "~": exp[i+1] = boolToString(!nextVal); break; // Not currently working (logs "expression invalid")
                         case "->": exp[i] = boolToString(!prevVal || nextVal); break;
                         default: System.out.println("unrecognised symbol"); break;
                     }
@@ -407,7 +407,7 @@ class Generator
 
             if (current.equals("-")) current += ">"; // Handle implies (implies takes 2 characters)
 
-            if (!current.equals(">"))
+            if (!current.equals(">") && !current.equals("~"))
             {
                 if (!arrayContains(current, accepted))
                 {
@@ -415,10 +415,7 @@ class Generator
 
                     wasLetter = true;
 
-                    if (!Character.isLetter(current.charAt(0)))
-                    {
-                        return false;
-                    }
+                    if (!Character.isLetter(current.charAt(0))) return false;
                 }
                 else
                 {

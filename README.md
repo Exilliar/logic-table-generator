@@ -19,4 +19,21 @@ v = or
 
 -> = ¬A v B = implies
 
+# Example Expressions
+A v B Would give
+
+`| A | B | Result |`
+`| 0 | 0 | 0 |`
+`| 0 | 1 | 1 |`
+`| 1 | 0 | 1 |`
+`| 1 | 1 | 1 |`
+
+A ^ B Would give
+
+`| A | B | Result |`
+`| 0 | 0 | 0 |`
+`| 0 | 1 | 0 |`
+`| 1 | 0 | 0 |`
+`| 1 | 1 | 1 |`
+
 NOTE: does not support xor (yet)

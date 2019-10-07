@@ -176,7 +176,7 @@ class Generator
                     {
                         case "v": exp[i] = boolToString(prevVal || nextVal); break;
                         case "^": exp[i] = boolToString(prevVal && nextVal); break;
-                        case "¬": exp[i+1] = boolToString(!nextVal); break;
+                        case "¬": exp[i+1] = boolToString(!nextVal); break; // Not currently working (logs "expression invalid")
                         case "->": exp[i] = boolToString(!prevVal || nextVal); break;
                         default: System.out.println("unrecognised symbol"); break;
                     }

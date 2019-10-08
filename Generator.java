@@ -5,7 +5,7 @@ class Generator
     public static void main(String[] args)
     {
         String[] accepted = new String[]{"~","v","^","->","(",")"}; // All the accepted operators and brackets
-        String[] banned = new String[]{"v"}; // Values that are banned (e.g. they are used as expressions). Not used yet
+        String[] multiChar = new String[]{"->"}; // All the operators that contain multiple charaters
 
         String expression = getString("Please enter the expression"); // Get the expression from the user
         expression.replaceAll("\\s+",""); // Remove all spaces, makes calculating the expression easier later
@@ -63,14 +63,8 @@ class Generator
             {
                 if (expression.charAt(i) != ">".charAt(0)) // If current value is not the second half of an implies
                 {
-                    if (expression.charAt(i) == "-".charAt(0))
-                    {
-                        expArr[arrI] = Character.toString(expression.charAt(i)) + Character.toString(expression.charAt(i+1));
-                    }
-                    else
-                    {
-                        expArr[arrI] = Character.toString(expression.charAt(i));
-                    }
+                    if (expression.charAt(i) == "-".charAt(0)) expArr[arrI] = Character.toString(expression.charAt(i)) + Character.toString(expression.charAt(i+1));
+                    else expArr[arrI] = Character.toString(expression.charAt(i));
 
                     arrI++;
                 }
@@ -152,6 +146,7 @@ class Generator
                     if (exp[i+1].equals("("))
                     {
                         exp[i+1] = "";
+
                         calcExp(exp, i+1, findCloseBrackets(exp, i+1));
                     }
 
@@ -160,10 +155,10 @@ class Generator
 
                     switch(exp[i])
                     {
-                        case "v": exp[i] = boolToString(prevVal || nextVal); break;
-                        case "^": exp[i] = boolToString(prevVal && nextVal); break;
-                        case "~": exp[i+1] = boolToString(!nextVal); break; // Not currently working (logs "expression invalid")
-                        case "->": exp[i] = boolToString(!prevVal || nextVal); break;
+                        case "v": exp[i] = boolToString(prevVal || nextVal); break; // Or
+                        case "^": exp[i] = boolToString(prevVal && nextVal); break; // And
+                        case "~": exp[i+1] = boolToString(!nextVal); break; // Not
+                        case "->": exp[i] = boolToString(!prevVal || nextVal); break; // Implies
                         default: System.out.println("unrecognised symbol"); break;
                     }
                 }
@@ -214,6 +209,7 @@ class Generator
             if (exp[i].equals(")") && open == 0)
             {
                 exp[i] = "";
+
                 return i;
             }
             else if (exp[i].equals(")")) open--;
@@ -227,10 +223,7 @@ class Generator
     {
         for (int i = 0; i < exp.length; i++)
         {
-            if (Character.isLetter(exp[i].charAt(0)) && !exp[i].equals("v")) // Check that the value is a letter and is not 'v'(or symbol)
-            {
-                exp[i] = getCheckValue(valuesData,exp[i]);
-            }
+            if (Character.isLetter(exp[i].charAt(0)) && !exp[i].equals("v")) exp[i] = getCheckValue(valuesData,exp[i]); // Check that the value is a letter and is not 'v'(or symbol)
         }
     }
 
@@ -238,10 +231,7 @@ class Generator
     {
         for (int i = 0; i < valuesData.length; i++)
         {
-            if (valuesData[i][0].equals(value))
-            {
-                return valuesData[i][1];
-            }
+            if (valuesData[i][0].equals(value)) return valuesData[i][1];
         }
 
         return "null";
@@ -298,10 +288,7 @@ class Generator
 
                 return;
             }
-            else
-            {
-                binary[i] = "0";
-            }
+            else binary[i] = "0";
         }
 
         return;
@@ -362,10 +349,7 @@ class Generator
             {
                 if (!arrayContains(current, accepted)) // Check that current is not an operator
                 {
-                    if (!values.contains(current))
-                    {
-                        values.add(current);
-                    }
+                    if (!values.contains(current)) values.add(current);
                 }
             }
         }
@@ -379,7 +363,11 @@ class Generator
 
         System.out.println(msg);
 
-        return s.nextLine();
+        String res = s.nextLine();
+
+        s.close();
+
+        return res;
     }
 
     public static boolean validExpression(String exp, String[] accepted)
@@ -428,10 +416,7 @@ class Generator
     {
         for (int i = 0; i < arr.length; i++)
         {
-            if (c.equals(arr[i]))
-            {
-                return true;
-            }
+            if (c.equals(arr[i])) return true;
         }
         return false;
     }

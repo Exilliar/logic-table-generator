@@ -35,8 +35,6 @@ class Generator
 
     public static boolean calcResult(boolean[] row, String[] expressionArr, ArrayList<String> values)
     {
-        boolean result = false;
-
         ValuesData valuesData = new ValuesData(values.size());
 
         String[] exp = copyStringArr(expressionArr); // Copying the expression as changing the values in expressionArr here will change it everywhere (yey stack and heap)
@@ -47,9 +45,7 @@ class Generator
 
         calcExp(exp, 0, exp.length-1);
 
-        result = findResult(exp);
-
-        return result;
+        return findResult(exp);
     }
 
     public static boolean[] removeLastIndex(boolean[] b)
@@ -133,7 +129,7 @@ class Generator
         {
             case "v": exp[i] = String.valueOf(prevVal || nextVal); break; // Or
             case "^": exp[i] = String.valueOf(prevVal && nextVal); break; // And
-            case "~":
+            case "~": // Not
                 if (exp[i+1].equals("("))
                 {
                     handleBrackets(exp,i+1);
@@ -141,7 +137,7 @@ class Generator
 
                 exp[i+1] = String.valueOf(!nextVal);
 
-                break; // Not
+                break;
             case "->": exp[i] = String.valueOf(!prevVal || nextVal); break; // Implies
             default: System.out.println("unrecognised symbol: " + exp[i]); break;
         }

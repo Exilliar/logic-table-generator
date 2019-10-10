@@ -29,11 +29,6 @@ public class Table
         return values[i];
     }
 
-    public void setHeaders(String[] h)
-    {
-        headers = h;
-    }
-
     public void setResult(boolean b, int i)
     {
         values[i][values[0].length-1] = b;

@@ -118,7 +118,11 @@ class Generator
                         case "^": exp[i] = String.valueOf(prevVal && nextVal); break; // And
                         case "~": exp[i+1] = String.valueOf(!nextVal); break; // Not
                         case "->": exp[i] = String.valueOf(!prevVal || nextVal); break; // Implies
-                        default: System.out.println("unrecognised symbol"); break;
+                        case "(":
+                            exp[i] = "";
+                            calcExp(exp, i, findCloseBrackets(exp, i));
+                            System.out.println(Arrays.toString(exp));
+                        default: System.out.println("unrecognised symbol: " + exp[i]); break;
                     }
                 }
             }

@@ -4,113 +4,44 @@ class Generator
 {
     public static void main(String[] args)
     {
-        String[] accepted = new String[]{"~","v","^","->","(",")"}; // All the accepted operators and brackets
         String[] multiChar = new String[]{"->"}; // All the operators that contain multiple charaters
 
-        String expression = getString("Please enter the expression"); // Get the expression from the user
-        expression.replaceAll("\\s+",""); // Remove all spaces, makes calculating the expression easier later
+        Expression testExpression = new Expression(getString("Please enter an expression"));
 
-        if (!validExpression(expression, accepted))
-        {
-            System.out.println("Invalid expression");
-            return; // Will end the program if the expression is invalid
-        }
-
-        String[] expressionArr = splitExpression(expression);
-
-        ArrayList<String> values = findValues(expression, accepted); // Fill arraylist with all values in expression
-
-        if (values.size() == 0)
-        {
-            System.out.println("No values in expression");
-            return;
-        }
+        String[] expressionArr = testExpression.getExpArr();
+        ArrayList<String> values = testExpression.getValues();
 
         int numRows = (int)Math.round(findNumRows(values.size()-1, 0) + 2);
         int numCols = values.size()+1;
 
-        String[][] table = new String[numRows][numCols];
+        Table table = new Table(numCols, numRows-1);
 
-        addHeaders(table,values);
+        String[] headers = findHeaders(values);
 
-        fillTable(table, numCols-1, expressionArr, values);
+        table.setHeaders(headers);
 
-        printTable(table, numRows);
+        calcTable(table, expressionArr, values);
+
+        table.printTable();
     }
 
-    public static String[] splitExpression(String expression)
+    public static void calcTable(Table table, String[] expressionArr, ArrayList<String> values)
     {
-        if (!expression.contains("->"))
+        for (int r = 0; r < table.getNumValueRows(); r++)
         {
-            String[] expArr = new String[expression.length()];
+            boolean[] realValues = removeLastIndex(table.getValuesRow(r));
 
-            for (int i = 0; i < expression.length(); i++)
-            {
-                expArr[i] = Character.toString(expression.charAt(i));
-            }
+            boolean result = calcResult(realValues, expressionArr, values);
 
-            return expArr;
-        }
-        else
-        {
-            int numImplies = findNumImplies(expression); // Need to find the number of implies statements as it takes 2 chars rather than the usual 1
-
-            String[] expArr = new String[expression.length()-numImplies];
-
-            int arrI = 0;
-
-            for (int i = 0; i < expression.length(); i++)
-            {
-                if (expression.charAt(i) != ">".charAt(0)) // If current value is not the second half of an implies
-                {
-                    if (expression.charAt(i) == "-".charAt(0)) expArr[arrI] = Character.toString(expression.charAt(i)) + Character.toString(expression.charAt(i+1));
-                    else expArr[arrI] = Character.toString(expression.charAt(i));
-
-                    arrI++;
-                }
-            }
-
-            return expArr;
+            table.setResult(result, r);
         }
     }
 
-    public static int findNumImplies(String exp)
+    public static boolean calcResult(boolean[] row, String[] expressionArr, ArrayList<String> values)
     {
-        int num = 0;
+        boolean result = false;
 
-        for (int i = 0; i < exp.length(); i++)
-        {
-            Character current = exp.charAt(i);
-
-            if (current == "-".charAt(0)) num++;
-        }
-
-        return num;
-    }
-
-    public static void fillTable(String[][] table, int numCols, String[] expressionArr, ArrayList<String> values) // Calculate the expression and fill the table array
-    {
-        String[] binary = new String[numCols];
-
-        Arrays.fill(binary, "0");
-
-        for (int r = 1; r < table.length; r++)
-        {
-            addToRow(table,r,binary);
-
-            String result = calcResult(table[r], expressionArr, values);
-
-            table[r][numCols] = result;
-
-            incBinary(binary);
-        }
-    }
-
-    public static String calcResult(String[] row, String[] expressionArr, ArrayList<String> values)
-    {
-        String result = "";
-
-        String[][] valuesData = new String[values.size()][2];
+        ValuesData valuesData = new ValuesData(values.size());
 
         String[] exp = copyStringArr(expressionArr); // Copying the expression as changing the values in expressionArr here will change it everywhere (yey stack and heap)
 
@@ -125,14 +56,42 @@ class Generator
         return result;
     }
 
-    public static String findResult(String[] exp)
+    public static boolean[] removeLastIndex(boolean[] b)
+    {
+        boolean[] res = new boolean[b.length-1];
+
+        for (int i = 0; i < res.length; i++)
+        {
+            res[i] = b[i];
+        }
+
+        return res;
+    }
+
+    public static String[] findHeaders(ArrayList<String> values)
+    {
+        String[] h = new String[values.size()+1];
+
+        for (int i = 0; i < values.size(); i++)
+        {
+            h[i] = values.get(i);
+        }
+
+        h[values.size()] = "Result";
+
+        return h;
+    }
+
+    public static boolean findResult(String[] exp)
     {
         for (int i = 0; i < exp.length; i++)
         {
-            if (exp[i].equals("1") || exp[i].equals("0")) return exp[i];
+            if (exp[i].equals("true") || exp[i].equals("false")) return Boolean.parseBoolean(exp[i]);
         }
 
-        return "Error";
+        System.out.println("Error");
+
+        return false;
     }
 
     public static void calcExp(String[] exp, int start, int end) // Actually run the calculation, needs to be a separate function as it may be recursive (due to brackets)
@@ -141,7 +100,7 @@ class Generator
         {
             if (!exp[i].equals(""))
             {
-                if (!exp[i].equals("1") && !exp[i].equals("0"))
+                if (!exp[i].equals("false") && !exp[i].equals("true"))
                 {
                     if (exp[i+1].equals("("))
                     {
@@ -155,10 +114,10 @@ class Generator
 
                     switch(exp[i])
                     {
-                        case "v": exp[i] = boolToString(prevVal || nextVal); break; // Or
-                        case "^": exp[i] = boolToString(prevVal && nextVal); break; // And
-                        case "~": exp[i+1] = boolToString(!nextVal); break; // Not
-                        case "->": exp[i] = boolToString(!prevVal || nextVal); break; // Implies
+                        case "v": exp[i] = String.valueOf(prevVal || nextVal); break; // Or
+                        case "^": exp[i] = String.valueOf(prevVal && nextVal); break; // And
+                        case "~": exp[i+1] = String.valueOf(!nextVal); break; // Not
+                        case "->": exp[i] = String.valueOf(!prevVal || nextVal); break; // Implies
                         default: System.out.println("unrecognised symbol"); break;
                     }
                 }
@@ -170,9 +129,9 @@ class Generator
     {
         for (int i = start; i >= 0; i--)
         {
-            if (exp[i].equals("1") || exp[i].equals("0"))
+            if (exp[i].equals("true") || exp[i].equals("false"))
             {
-                boolean value = stringToBool(exp[i]);
+                boolean value = Boolean.parseBoolean(exp[i]);
 
                 exp[i] = "";
 
@@ -187,9 +146,9 @@ class Generator
     {
         for (int i = start; i < exp.length; i++)
         {
-            if (exp[i].equals("1") || exp[i].equals("0"))
+            if (exp[i].equals("true") || exp[i].equals("false"))
             {
-                boolean value = stringToBool(exp[i]);
+                boolean value = Boolean.parseBoolean(exp[i]);
 
                 exp[i] = "";
 
@@ -219,7 +178,7 @@ class Generator
         return -1;
     }
 
-    public static void placeValues(String[] exp, String[][] valuesData)
+    public static void placeValues(String[] exp, ValuesData valuesData)
     {
         for (int i = 0; i < exp.length; i++)
         {
@@ -227,11 +186,11 @@ class Generator
         }
     }
 
-    public static String getCheckValue(String[][] valuesData, String value)
+    public static String getCheckValue(ValuesData valuesData, String value)
     {
-        for (int i = 0; i < valuesData.length; i++)
+        for (int i = 0; i < valuesData.size(); i++)
         {
-            if (valuesData[i][0].equals(value)) return valuesData[i][1];
+            if (valuesData.getValue(i).equals(value)) return String.valueOf(valuesData.getData(i));
         }
 
         return "null";
@@ -249,112 +208,19 @@ class Generator
         return newArr;
     }
 
-    public static void fillValuesData(String[][] valuesData, String[] row, ArrayList<String> values)
+    public static void fillValuesData(ValuesData valuesData, boolean[] row, ArrayList<String> values)
     {
         for (int v = 0; v < values.size(); v++)
         {
-            valuesData[v][0] = values.get(v);
-            valuesData[v][1] = row[v];
+            valuesData.setValue(v, values.get(v));
+            valuesData.setData(v, row[v]);
         }
-    }
-
-    public static void addToRow(String[][] table, int r, String[] binary)
-    {
-        for (int c = 0; c < binary.length; c++)
-        {
-            table[r][c] = binary[c];
-        }
-    }
-
-
-    public static void incBinary(String[] binary) // Increment a binary number by 1
-    {
-        int len = binary.length;
-
-        if (binary[len-1] == "0")
-        {
-            binary[len-1] = "1";
-
-            return;
-        }
-
-        binary[len-1] = "0";
-
-        for (int i = len-2; i >= 0; i--)
-        {
-            if (binary[i] == "0")
-            {
-                binary[i] = "1";
-
-                return;
-            }
-            else binary[i] = "0";
-        }
-
-        return;
-    }
-
-    public static void printTable(String[][] table, int numRows)
-    {
-        for (int r = 0; r < numRows; r++)
-        {
-            String row = "| ";
-
-            for (int c = 0; c < table[1].length; c++)
-            {
-                row += table[r][c] + " | ";
-            }
-
-            System.out.println(row);
-        }
-    }
-
-    public static void addHeaders(String[][] table, ArrayList<String> values)
-    {
-        for (int i = 0; i < values.size(); i++)
-        {
-            table[0][i] = values.get(i);
-        }
-
-        table[0][values.size()] = "Result";
     }
 
     public static double findNumRows(int size, double total) // Finds the number of columns required for the logic table. Will calculate by finding max binary number possible with binary number length "size" + 1 (+1 is done outside of function)
     {
         if (size != 0) return findNumRows(size-1, total + Math.pow(2,size));
         else return total + 1;
-    }
-
-    public static boolean stringToBool(String s) // Converts string to boolean
-    {
-        if (s.equals("1")) return true;
-        else return false;
-    }
-
-    public static String boolToString(boolean b) // Converts boolean to string
-    {
-        if (b) return "1";
-        else return "0";
-    }
-
-    public static ArrayList<String> findValues(String exp, String[] accepted)
-    {
-        ArrayList<String> values = new ArrayList<String>();
-
-        for (int i = 0; i < exp.length(); i++)
-        {
-            String current = String.valueOf(exp.charAt(i));
-
-            if (!current.equals("-") && !current.equals(">")) // Check if the value is an implies
-            {
-                if (!arrayContains(current, accepted)) // Check that current is not an operator
-                {
-                    if (!values.contains(current)) values.add(current);
-                }
-            }
-        }
-
-        return values;
     }
 
     public static String getString(String msg)
@@ -368,56 +234,5 @@ class Generator
         s.close();
 
         return res;
-    }
-
-    public static boolean validExpression(String exp, String[] accepted)
-    {
-        boolean wasLetter = false; // Stores whether the last value was a letter (2 letters are not allowed to be next to each other)
-        int openBracket = 0; // increases if bracket is opened, decreases if bracket is closed, value should be 0 at the end of the function (bracket has been opened and not closed)
-
-        for (int i = 0; i < exp.length(); i++)
-        {
-            String current = String.valueOf(exp.charAt(i));
-
-            if (current.equals("-")) current += ">"; // Handle implies (implies takes 2 characters)
-
-            if (!current.equals(">") && !current.equals("~"))
-            {
-                if (!arrayContains(current, accepted))
-                {
-                    if (wasLetter) return false;
-
-                    wasLetter = true;
-
-                    if (!Character.isLetter(current.charAt(0))) return false;
-                }
-                else
-                {
-                    wasLetter = false;
-
-                    openBracket += checkBrackets(current);
-                }
-            }
-        }
-
-        if (openBracket != 0) return false;
-
-        return true;
-    }
-
-    public static int checkBrackets(String c)
-    {
-        if (c.equals("(")) return 1;
-        else if (c.equals(")")) return -1;
-        else return 0;
-    }
-
-    public static boolean arrayContains(String c, String[] arr) // Couldn't find a cleaner way to check if array contains a value
-    {
-        for (int i = 0; i < arr.length; i++)
-        {
-            if (c.equals(arr[i])) return true;
-        }
-        return false;
     }
 }

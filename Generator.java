@@ -106,22 +106,37 @@ class Generator
                     {
                         exp[i+1] = "";
 
-                        calcExp(exp, i+1, findCloseBrackets(exp, i+1));
+                        calcExp(exp, i+2, findCloseBrackets(exp, i+1));
+
+                        defaultCalc(exp, i);
                     }
-
-                    boolean prevVal = findPrevVal(exp, i);
-                    boolean nextVal = findNextVal(exp, i);
-
-                    switch(exp[i])
+                    else if (exp[i].equals("("))
                     {
-                        case "v": exp[i] = String.valueOf(prevVal || nextVal); break; // Or
-                        case "^": exp[i] = String.valueOf(prevVal && nextVal); break; // And
-                        case "~": exp[i+1] = String.valueOf(!nextVal); break; // Not
-                        case "->": exp[i] = String.valueOf(!prevVal || nextVal); break; // Implies
-                        default: System.out.println("unrecognised symbol"); break;
+                        exp[i] = "";
+
+                        calcExp(exp, i+1, findCloseBrackets(exp, i));
+                    }
+                    else
+                    {
+                        defaultCalc(exp, i);
                     }
                 }
             }
+        }
+    }
+
+    public static void defaultCalc(String[] exp, int i)
+    {
+        boolean prevVal = findPrevVal(exp, i);
+        boolean nextVal = findNextVal(exp, i);
+
+        switch(exp[i])
+        {
+            case "v": exp[i] = String.valueOf(prevVal || nextVal); break; // Or
+            case "^": exp[i] = String.valueOf(prevVal && nextVal); break; // And
+            case "~": exp[i+1] = String.valueOf(!nextVal); break; // Not
+            case "->": exp[i] = String.valueOf(!prevVal || nextVal); break; // Implies
+            default: System.out.println("unrecognised symbol: " + exp[i]); break;
         }
     }
 

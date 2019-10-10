@@ -29,3 +29,9 @@ A ^ B Would give
 `| 1 | 1 | 1 |`  
 
 NOTE: does not support xor (yet)
+
+# Compiling and Running
+To compile: `javac @sources.txt`  
+To run: `java Generator`
+
+If a new file is added, add the file to sources.txt. This will mean that the file will be compiled with the above compile command

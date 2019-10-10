@@ -106,23 +106,26 @@ class Generator
                     {
                         exp[i+1] = "";
 
-                        calcExp(exp, i+1, findCloseBrackets(exp, i+1));
+                        calcExp(exp, i+2, findCloseBrackets(exp, i+1));
                     }
-
-                    boolean prevVal = findPrevVal(exp, i);
-                    boolean nextVal = findNextVal(exp, i);
-
-                    switch(exp[i])
+                    else if (exp[i].equals("("))
                     {
-                        case "v": exp[i] = String.valueOf(prevVal || nextVal); break; // Or
-                        case "^": exp[i] = String.valueOf(prevVal && nextVal); break; // And
-                        case "~": exp[i+1] = String.valueOf(!nextVal); break; // Not
-                        case "->": exp[i] = String.valueOf(!prevVal || nextVal); break; // Implies
-                        case "(":
-                            exp[i] = "";
-                            calcExp(exp, i, findCloseBrackets(exp, i));
-                            System.out.println(Arrays.toString(exp));
-                        default: System.out.println("unrecognised symbol: " + exp[i]); break;
+                        exp[i] = "";
+                        calcExp(exp, i+1, findCloseBrackets(exp, i));
+                    }
+                    else
+                    {
+                        boolean prevVal = findPrevVal(exp, i);
+                        boolean nextVal = findNextVal(exp, i);
+
+                        switch(exp[i])
+                        {
+                            case "v": exp[i] = String.valueOf(prevVal || nextVal); break; // Or
+                            case "^": exp[i] = String.valueOf(prevVal && nextVal); break; // And
+                            case "~": exp[i+1] = String.valueOf(!nextVal); break; // Not
+                            case "->": exp[i] = String.valueOf(!prevVal || nextVal); break; // Implies
+                            default: System.out.println("unrecognised symbol: " + exp[i]); break;
+                        }
                     }
                 }
             }

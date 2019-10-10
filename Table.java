@@ -7,12 +7,14 @@ public class Table
 
     int numValueRows;
 
-    public Table(int numCols, int numRows)
+    public Table(int numCols, int numRows, String[] h)
     {
         headers = new String[numCols];
         values = new boolean[numRows][numCols];
 
         numValueRows = numRows;
+
+        headers = h;
 
         fillValues(values);
     }

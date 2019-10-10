@@ -14,11 +14,7 @@ class Generator
         int numRows = (int)Math.round(findNumRows(values.size()-1, 0) + 2);
         int numCols = values.size()+1;
 
-        Table table = new Table(numCols, numRows-1);
-
-        String[] headers = findHeaders(values);
-
-        table.setHeaders(headers);
+        Table table = new Table(numCols, numRows-1, findHeaders(values));
 
         calcTable(table, expressionArr, values);
 

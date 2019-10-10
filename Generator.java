@@ -104,17 +104,13 @@ class Generator
                 {
                     if (exp[i+1].equals("("))
                     {
-                        exp[i+1] = "";
-
-                        calcExp(exp, i+2, findCloseBrackets(exp, i+1));
+                        handleBrackets(exp, i+1);
 
                         defaultCalc(exp, i);
                     }
                     else if (exp[i].equals("("))
                     {
-                        exp[i] = "";
-
-                        calcExp(exp, i+1, findCloseBrackets(exp, i));
+                        handleBrackets(exp, i);
                     }
                     else
                     {
@@ -123,6 +119,13 @@ class Generator
                 }
             }
         }
+    }
+
+    public static void handleBrackets(String[] exp, int i)
+    {
+        exp[i] = "";
+
+        calcExp(exp, i+1, findCloseBrackets(exp, i));
     }
 
     public static void defaultCalc(String[] exp, int i)
@@ -134,7 +137,15 @@ class Generator
         {
             case "v": exp[i] = String.valueOf(prevVal || nextVal); break; // Or
             case "^": exp[i] = String.valueOf(prevVal && nextVal); break; // And
-            case "~": exp[i+1] = String.valueOf(!nextVal); break; // Not
+            case "~":
+                if (exp[i+1].equals("("))
+                {
+                    handleBrackets(exp,i+1);
+                }
+
+                exp[i+1] = String.valueOf(!nextVal);
+
+                break; // Not
             case "->": exp[i] = String.valueOf(!prevVal || nextVal); break; // Implies
             default: System.out.println("unrecognised symbol: " + exp[i]); break;
         }

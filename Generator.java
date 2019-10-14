@@ -122,8 +122,19 @@ class Generator
 
     public static void defaultCalc(String[] exp, int i)
     {
+        if (exp[i+1].equals("~") && exp[i+2].equals("("))
+        {
+            System.out.println("not");
+            handleBrackets(exp,i+2);
+            System.out.println(Arrays.toString(exp));
+        }
+
         boolean prevVal = findPrevVal(exp, i);
-        boolean nextVal = findNextVal(exp, i);
+        boolean nextVal = exp[i+1].equals("~") ? !findNextVal(exp, i) : findNextVal(exp,i);
+
+        if (exp[i+1].equals("~")) exp[i+1] = "";
+
+        System.out.println(Arrays.toString(exp));
 
         switch(exp[i])
         {
@@ -134,6 +145,12 @@ class Generator
                 {
                     handleBrackets(exp,i+1);
                 }
+
+                System.out.println(Arrays.toString(exp));
+
+                nextVal = findNextVal(exp, i);
+
+                System.out.println(nextVal);
 
                 exp[i+1] = String.valueOf(!nextVal);
 

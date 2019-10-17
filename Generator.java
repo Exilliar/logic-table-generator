@@ -122,39 +122,18 @@ class Generator
 
     public static void defaultCalc(String[] exp, int i)
     {
-        if (exp[i+1].equals("~") && exp[i+2].equals("("))
-        {
-            System.out.println("not");
-            handleBrackets(exp,i+2);
-            System.out.println(Arrays.toString(exp));
-        }
+        if (exp[i+1].equals("~") && exp[i+2].equals("(")) handleBrackets(exp,i+2);
 
         boolean prevVal = findPrevVal(exp, i);
         boolean nextVal = exp[i+1].equals("~") ? !findNextVal(exp, i) : findNextVal(exp,i);
 
         if (exp[i+1].equals("~")) exp[i+1] = "";
 
-        System.out.println(Arrays.toString(exp));
-
         switch(exp[i])
         {
             case "v": exp[i] = String.valueOf(prevVal || nextVal); break; // Or
             case "^": exp[i] = String.valueOf(prevVal && nextVal); break; // And
-            case "~": // Not
-                if (exp[i+1].equals("("))
-                {
-                    handleBrackets(exp,i+1);
-                }
-
-                System.out.println(Arrays.toString(exp));
-
-                nextVal = findNextVal(exp, i);
-
-                System.out.println(nextVal);
-
-                exp[i+1] = String.valueOf(!nextVal);
-
-                break;
+            case "~": exp[i] = String.valueOf(!nextVal); break; // Not
             case "->": exp[i] = String.valueOf(!prevVal || nextVal); break; // Implies
             default: System.out.println("unrecognised symbol: " + exp[i]); break;
         }

@@ -14,11 +14,7 @@ class Generator
         int numRows = (int)Math.round(findNumRows(values.size()-1, 0) + 2);
         int numCols = values.size()+1;
 
-        Table table = new Table(numCols, numRows-1);
-
-        String[] headers = findHeaders(values);
-
-        table.setHeaders(headers);
+        Table table = new Table(numCols, numRows-1, findHeaders(values));
 
         calcTable(table, expressionArr, values);
 
@@ -39,8 +35,6 @@ class Generator
 
     public static boolean calcResult(boolean[] row, String[] expressionArr, ArrayList<String> values)
     {
-        boolean result = false;
-
         ValuesData valuesData = new ValuesData(values.size());
 
         String[] exp = copyStringArr(expressionArr); // Copying the expression as changing the values in expressionArr here will change it everywhere (yey stack and heap)
@@ -51,9 +45,7 @@ class Generator
 
         calcExp(exp, 0, exp.length-1);
 
-        result = findResult(exp);
-
-        return result;
+        return findResult(exp);
     }
 
     public static boolean[] removeLastIndex(boolean[] b)
@@ -104,17 +96,13 @@ class Generator
                 {
                     if (exp[i+1].equals("("))
                     {
-                        exp[i+1] = "";
-
-                        calcExp(exp, i+2, findCloseBrackets(exp, i+1));
+                        handleBrackets(exp, i+1);
 
                         defaultCalc(exp, i);
                     }
                     else if (exp[i].equals("("))
                     {
-                        exp[i] = "";
-
-                        calcExp(exp, i+1, findCloseBrackets(exp, i));
+                        handleBrackets(exp, i);
                     }
                     else
                     {
@@ -125,16 +113,27 @@ class Generator
         }
     }
 
+    public static void handleBrackets(String[] exp, int i)
+    {
+        exp[i] = "";
+
+        calcExp(exp, i+1, findCloseBrackets(exp, i));
+    }
+
     public static void defaultCalc(String[] exp, int i)
     {
+        if (exp[i+1].equals("~") && exp[i+2].equals("(")) handleBrackets(exp,i+2);
+
         boolean prevVal = findPrevVal(exp, i);
-        boolean nextVal = findNextVal(exp, i);
+        boolean nextVal = exp[i+1].equals("~") ? !findNextVal(exp, i) : findNextVal(exp,i);
+
+        if (exp[i+1].equals("~")) exp[i+1] = "";
 
         switch(exp[i])
         {
             case "v": exp[i] = String.valueOf(prevVal || nextVal); break; // Or
             case "^": exp[i] = String.valueOf(prevVal && nextVal); break; // And
-            case "~": exp[i+1] = String.valueOf(!nextVal); break; // Not
+            case "~": exp[i] = String.valueOf(!nextVal); break; // Not
             case "->": exp[i] = String.valueOf(!prevVal || nextVal); break; // Implies
             default: System.out.println("unrecognised symbol: " + exp[i]); break;
         }

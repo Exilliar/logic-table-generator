@@ -6,10 +6,13 @@ class Generator
     {
         String[] multiChar = new String[]{"->"}; // All the operators that contain multiple charaters
 
-        Expression testExpression = new Expression(getString("Please enter an expression"));
+        Expression expression;
 
-        String[] expressionArr = testExpression.getExpArr();
-        ArrayList<String> values = testExpression.getValues();
+        if (args.length > 0) expression = new Expression(args[0]);
+        else expression = new Expression(getString("Please enter an expression"));
+
+        String[] expressionArr = expression.getExpArr();
+        ArrayList<String> values = expression.getValues();
 
         int numRows = (int)Math.round(findNumRows(values.size()-1, 0) + 2);
         int numCols = values.size()+1;

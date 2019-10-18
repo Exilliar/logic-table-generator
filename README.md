@@ -34,4 +34,8 @@ NOTE: does not support xor (yet)
 To compile: `javac @sources.txt`  
 To run: `java Generator`
 
+
+Expressions can be entered as command line arguments when running the program (eg. `java Generator avb`), however, if an implies is in the expression then the argument must be surrounded by quotes (eg. `java Generator "a->b"`)
+
+
 If a new file is added, add the file to sources.txt. This will mean that the file will be compiled with the above compile command

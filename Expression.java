@@ -13,11 +13,11 @@ public class Expression
     {
         exp = e;
 
-        exp.replaceAll("\\s+",""); // Remove all spaces, makes calculating the expression easier later
+        exp = exp.replaceAll("\\s+",""); // Remove all spaces, makes calculating the expression easier later
 
         if (validExpression(exp, accepted))
         {
-            expArr = splitExpression(e);
+            expArr = splitExpression(exp);
 
             values = findValues(exp, accepted); // Fill arraylist with all values in expression
 

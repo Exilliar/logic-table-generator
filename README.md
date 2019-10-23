@@ -39,3 +39,8 @@ A ^ B Would give
 `| 1 | 1 | 1 |`  
 
 NOTE: does not support xor (yet)
+
+# Recommended bash alias'
+alias ltg='cd /path/to/project/file && clear'  
+alias ltgc='ltg && javac @sources.txt'  
+alias ltgr='ltgc && java Generator'

@@ -97,15 +97,15 @@ class Generator
             {
                 if (!exp[i].equals("false") && !exp[i].equals("true"))
                 {
-                    if (exp[i+1].equals("("))
+                    if (exp[i].equals("("))
+                    {
+                        handleBrackets(exp, i);
+                    }
+                    else if (exp[i+1].equals("("))
                     {
                         handleBrackets(exp, i+1);
 
                         defaultCalc(exp, i);
-                    }
-                    else if (exp[i].equals("("))
-                    {
-                        handleBrackets(exp, i);
                     }
                     else
                     {

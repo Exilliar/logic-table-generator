@@ -14,7 +14,7 @@ class Generator
         String[] expressionArr = expression.getExpArr();
         ArrayList<String> values = expression.getValues();
 
-        int numRows = (int)Math.round(findNumRows(values.size()-1, 0) + 2);
+        int numRows = (int)Math.pow(2,values.size())+1;
         int numCols = values.size()+1;
 
         Table table = new Table(numCols, numRows-1, findHeaders(values));
@@ -232,12 +232,6 @@ class Generator
             valuesData.setValue(v, values.get(v));
             valuesData.setData(v, row[v]);
         }
-    }
-
-    public static double findNumRows(int size, double total) // Finds the number of columns required for the logic table. Will calculate by finding max binary number possible with binary number length "size" + 1 (+1 is done outside of function)
-    {
-        if (size != 0) return findNumRows(size-1, total + Math.pow(2,size));
-        else return total + 1;
     }
 
     public static String getString(String msg)
